@@ -74,18 +74,15 @@ jobs:
     - uses: actions/checkout@v3
       with:
         submodules: 'recursive'
-    - name: ccache
-      uses: hendrikmuhs/ccache-action@v1
-      with:
-        key: ${{ matrix.os }}-${{ matrix.enable_ui }}-${{ matrix.build_type }}
-    - name: Generating Makefiles
-      shell: bash
+    - name: Download compiled skia
       run: |
         brew install ninja
         pip install lastversion
-        export enable_ccache=on
         wget -q -O skia.zip https://github.com/aseprite/skia/releases/latest/download/Skia-macOS-Release-x64.zip
         7z x skia.zip -y -oskia | grep ing
+    - name: Generating Makefiles
+      shell: bash
+      run: |
         mkdir build
         cd build
         cmake \
@@ -94,12 +91,13 @@ jobs:
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
           -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk \
           -DLAF_BACKEND=skia \
-          -DSKIA_DIR=${{ steps.path.outputs.working_path }}/skia \
-          -DSKIA_LIBRARY_DIR=${{ steps.path.outputs.working_path }}/skia/out/Release-x64 \
-          -DSKIA_LIBRARY=${{ steps.path.outputs.working_path }}/skia/out/Release-x64/libskia.a \
+          -DSKIA_DIR=../skia \
+          -DSKIA_LIBRARY_DIR=../skia/out/Release-x64 \
+          -DSKIA_LIBRARY=../skia/out/Release-x64/libskia.a \
           -G Ninja \
           -Wno-dev \
           ..
+        ninja aseprite
     - name: Compiling
       shell: bash
       run: |
