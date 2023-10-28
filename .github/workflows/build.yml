@@ -32,7 +32,7 @@ jobs:
       run: |
         export enable_ccache=off
         curl -L https://github.com/aseprite/skia/releases/latest/download/Skia-Windows-Release-x64.zip --output skia.zip
-        7z x skia.zip
+        7z x skia.zip -oskia
         cmake -S . -B build -G Ninja \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DENABLE_UI=${{ matrix.enable_ui }} \
@@ -84,8 +84,8 @@ jobs:
         brew install ninja
         pip install lastversion
         export enable_ccache=on
-        curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-macOS-Release-x64.zip --output skia.zip
-        7z x skia.zip
+        wget -q -O skia.zip https://github.com/aseprite/skia/releases/latest/download/Skia-macOS-Release-x64.zip
+        7z x skia.zip -y -oskia | grep ing
         mkdir build
         cd build
         cmake \
