@@ -22,21 +22,11 @@ jobs:
       if: ${{ runner.os == 'macOS' }}
       with:
         key: ${{ matrix.os }}-${{ matrix.enable_ui }}-${{ matrix.build_type }}
-    - uses: turtlesec-no/get-ninja@main
+    - uses: seanmiddleditch/gha-setup-ninja@master
     - uses: ilammy/msvc-dev-cmd@v1
-      if: runner.os == 'Windows'
     - name: Workaround for windows-2022 and cmake 3.25.0
-      if: runner.os == 'Windows'
       shell: bash
       run: rm -rf C:/Strawberry/
-    - name: Install Dependencies
-      shell: bash
-      run: |
-        if [[ "${{ runner.os }}" == "Linux" ]] ; then
-          sudo apt-get update -qq
-          sudo apt-get install -y \
-            libx11-dev libxcursor-dev libxi-dev
-        fi
     - name: Generating Makefiles
       shell: bash
       run: |
@@ -88,14 +78,14 @@ jobs:
       uses: hendrikmuhs/ccache-action@v1
       with:
         key: ${{ matrix.os }}-${{ matrix.enable_ui }}-${{ matrix.build_type }}
-    - uses: turtlesec-no/get-ninja@main
     - name: Generating Makefiles
       shell: bash
       run: |
+        brew install ninja
+        pip install lastversion
         export enable_ccache=on
         curl -L https://github.com/aseprite/skia/releases/download/m102-861e4743af/Skia-macOS-Release-x64.zip --output skia.zip
         7z x skia.zip
-        cd aseprite/
         mkdir build
         cd build
         cmake \
@@ -117,10 +107,10 @@ jobs:
     - name: 打包
       shell: bash
       run: |
-        cd aseprite/build/bin
-        7z -tzip a Aseprite-mac-x64.zip * -mx0 | grep ing
-        cd ../../..
-        mv aseprite/build/bin/aseprite-mac-x64.zip .
+        cd build/bin
+        7z -tzip a aseprite-mac-x64.zip * -mx0 | grep ing
+        cd ../..
+        mv build/bin/aseprite-mac-x64.zip .
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.3
       with:
