@@ -52,12 +52,12 @@ jobs:
         REPO_NAME="${GITHUB_REPOSITORY#${{ github.repository_owner }}/}"
 
         cd D:/a/$REPO_NAME/$REPO_NAME/build/bin/
-        7z a -tzip aseprite-win-zip data aseprite.exe
-        cp aseprite-win-zip D:/a/
+        7z a -tzip aseprite-win-x64.zip data aseprite.exe
+        cp aseprite-win-x64.zip D:/a/
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.3
       with:
-        path: D:/a/aseprite-win-zip
+        path: D:/a/aseprite-win-x64.zip
   build-mac:
     runs-on: macos-latest
     strategy:
@@ -131,7 +131,7 @@ jobs:
         draft: true
         prerelease: false
         files: |
-          artifact/aseprite-win-zip
+          artifact/aseprite-win-x64.zip
           artifact/aseprite-mac-x64.zip
         body: |
           Unofficial dev release.
